@@ -12,6 +12,10 @@ provider:
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-2'}
 
+  tracing:
+    lambda: true
+    apiGateway: true
+ 
 
   #DONE : configure env variables.
   environment:
@@ -21,13 +25,7 @@ provider:
     TODO_S3_BUCKET: serverless-todo-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
 
-  # iamRoleStatements:
-  #   - Effect: Allow
-  #     Action:
-  #       - s3:PutObject
-  #       - s3:GetObject
-  #       - s3:DeleteObject
-  #     Resource: arn:aws:s3:::${self:provider.environment.TODO_S3_BUCKET}/*
+
     
 
 functions:
@@ -147,6 +145,24 @@ functions:
   # DONE: Configure this function
   GenerateUploadUrl:
     handler: src/lambda/http/generateUploadUrl.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+          - s3:GetObject
+          - s3:DeleteObject
+        Resource: arn:aws:s3:::${self:provider.environment.TODO_S3_BUCKET}/*
+      - Effect: Allow
+        Action:
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODO_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+          - dynamodb:PutItem
+          - dynamodb:DeleteItem
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.CONNECTIONS_TABLE}
     events:
       - http:
           method: post
