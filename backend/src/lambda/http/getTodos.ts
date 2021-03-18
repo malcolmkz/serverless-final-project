@@ -44,5 +44,6 @@ async function getTodosByUser(userId: string) {
     ScanIndexForward: false
   }).promise()
 
+  logger.info(`List of Todos: ${JSON.stringify(result.Items)}`)
   return result.Items
 }

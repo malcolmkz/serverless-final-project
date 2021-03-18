@@ -45,13 +45,17 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
 async function createTodo(todoId:string, userId:string, newTodo: CreateTodoRequest){
   const createdAt = new Date().toISOString()
   const done: boolean = false
+  
+  const attachmentUrl = `https://${bucketName}.s3.amazonaws.com/${todoId}`
+  logger.info(`Attachment URL : ${attachmentUrl}`)
+
   const newItem = {
     todoId,
     createdAt,
     userId,
     ...newTodo,
     done,
-    attachmmentUrl : `https://${bucketName}.s3.amazonaws.com/${todoId}`,
+    attachmentUrl : attachmentUrl
   }
 
   logger.info("Creating a new Todo item:", newItem)
