@@ -3,9 +3,8 @@ import * as AWS  from 'aws-sdk'
 
 import { createLogger } from '../../utils/logger'
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda'
+import { updateTodoAttachmentUrlBL } from '../../businessLogic/todos'
 
-const todoTable = process.env.TODO_TABLE
-const docClient = new AWS.DynamoDB.DocumentClient()
 
 const bucketName = process.env.TODO_S3_BUCKET
 const urlExpiration = process.env.SIGNED_URL_EXPIRATION
@@ -27,19 +26,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     Expires: urlExpiration
   })
 
-  
-  await docClient.update({
-      TableName: todoTable,
-      Key:{
-        "todoId": todoId
-    },
-    UpdateExpression: "set attachmentUrl = :attachmentUrl",
-    ExpressionAttributeValues:{
-        ":attachmentUrl": `https://${bucketName}.s3.amazonaws.com/${todoId}`
-    },
-    ReturnValues:"UPDATED_NEW"
-  }).promise()
-  
+  await updateTodoAttachmentUrlBL(todoId,`https://${bucketName}.s3.amazonaws.com/${todoId}`)
 
   logger.info(`signed URL ${signedURL}`)
   logger.info("Generating an S3 signed URL")

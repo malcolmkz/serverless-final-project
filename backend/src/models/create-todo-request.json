@@ -6,7 +6,7 @@
       "createdAt": {
         "type": "string"
       },
-      "name": {
+      "todoName": {
         "type": "string",
         "minLength": 1
       },
@@ -21,7 +21,7 @@
       }
     },
     "required": [
-        "name"
+        "todoName"
     ],
     "additionalProperties": false
   }
